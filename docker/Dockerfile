@@ -4,6 +4,7 @@ SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update && \
     apt-get install --no-install-recommends -y\
+                       wget \
                        ros-melodic-tf* \
                        libopencv-dev \
                        python-catkin-pkg \
@@ -11,6 +12,7 @@ RUN apt-get update && \
                        python3-catkin-pkg-modules \
                        python3-rospkg-modules \
                        python3-opencv \
+                       python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 # ROS setting
@@ -64,7 +66,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         cuda-cudart-$CUDA_PKG_VERSION \
         cuda-libraries-$CUDA_PKG_VERSION \
         cuda-nvtx-$CUDA_PKG_VERSION \
-        libnccl2=$NCCL_VERSION-1+cuda10.0 \
+        libnccl2=$NCCL_VERSION-1+cuda9.2 \
         libcudnn7=$CUDNN_VERSION-1+cuda9.2 &&\
     apt-mark hold libnccl2 && \
     apt-mark hold libcudnn7 && \
@@ -86,3 +88,4 @@ ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 ENV NVIDIA_REQUIRE_CUDA "cuda>=9.2 "
 
+RUN pip3 install setuptools
