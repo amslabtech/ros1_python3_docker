@@ -18,25 +18,24 @@ RUN apt-get update && \
 # ROS setting
 WORKDIR /root
 
-RUN mkdir -p catkin_ws/src
+# create workspace and build cv_bridge for python3
+RUN mkdir catkin_ws \
+    && cd catkin_ws \
+    && catkin config -DPYTHON_EXECUTABLE=/usr/bin/python3 -DPYTHON_INCLUDE_DIR=/usr/include/python3.6m -DPYTHON_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython3.6m.so \
+    && catkin config --install \
+    && mkdir src \
+    && cd /root/catkin_ws/src \
+    && git clone -b melodic https://github.com/ros-perception/vision_opencv.git \
+    && cd /root/catkin_ws \
+    && source /opt/ros/melodic/setup.bash \
+    && catkin build cv_bridge \
+    && source install/setup.bash --extend
 
-RUN cd catkin_ws && source /opt/ros/melodic/setup.bash; catkin build
-
-RUN cd /root && echo source /root/catkin_ws/devel/setup.bash >> .bashrc
+RUN echo source /root/catkin_ws/devel/setup.bash >> .bashrc
 
 ENV ROS_PACKAGE_PATH=/root/catkin_ws:$ROS_PACKAGE_PATH
 
 ENV ROS_WORKSPACE=/root/catkin_ws
-
-WORKDIR /root
-
-# cv_bridge for python3
-RUN catkin config -DPYTHON_EXECUTABLE=/usr/bin/python3 -DPYTHON_INCLUDE_DIR=/usr/include/python3.6m -DPYTHON_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython3.6m.so \
-    && catkin config --install \
-    && cd catkin_ws/src \
-    && git clone -b melodic https://github.com/ros-perception/vision_opencv.git \
-    && cd ../ \
-    && catkin build cv_bridge
 
 COPY ./ros_entrypoint.sh /
 
@@ -52,10 +51,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         apt-get purge --autoremove -y curl && \
         rm -rf /var/lib/apt/lists/*
 
-# ENV CUDA_VERSION 9.2.148
 ENV CUDA_VERSION 9.0.176
 
-# ENV CUDA_PKG_VERSION 9-2=$CUDA_VERSION-1
 ENV CUDA_PKG_VERSION 9-0=$CUDA_VERSION-1
 
 ENV CUDNN_VERSION 7.6.4.38
