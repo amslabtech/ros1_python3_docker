@@ -92,3 +92,7 @@ ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 ENV NVIDIA_REQUIRE_CUDA "cuda>=9.0 "
 
 RUN pip3 install setuptools
+
+# set default python vertion 3
+RUN rm -f /usr/bin/python
+RUN ln -s /usr/bin/python3 /usr/bin/python
